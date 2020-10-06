@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  StartController.swift
 //  RxWeather
 //
 //  Created by Игорь Пинаев on 06.10.2020.
@@ -7,14 +7,12 @@
 //
 
 import UIKit
+import RxCocoa
+import RxSwift
 
-class ViewController: UIViewController {
-
+class StartController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        view.backgroundColor = .white
     }
-
-
 }
-
