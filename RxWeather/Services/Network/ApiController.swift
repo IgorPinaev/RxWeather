@@ -39,6 +39,8 @@ class ApiController {
     private func parse<T:Decodable>(from data: Data, with type: T.Type) -> Observable<T> {
         do {
             let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
+            decoder.dateDecodingStrategy = .secondsSince1970
             let response = try decoder.decode(T.self, from: data)
             return Observable.just(response)
         } catch {
