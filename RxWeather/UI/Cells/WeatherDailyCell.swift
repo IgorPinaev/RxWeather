@@ -14,9 +14,9 @@ class WeatherDailyCell: AbstractTableViewCell {
     private var tempNightLabel = UILabel()
     
     func fill(weather: WeatherDailyData) {
-        tempDayLabel.text = weather.temp.day.description
-        tempNightLabel.text = weather.temp.night.description
-        dateLabel.text = weather.dt.day
+        tempDayLabel.text = weather.temp.day.intDesc
+        tempNightLabel.text = weather.temp.night.intDesc
+        dateLabel.text = weather.dt.day.capitalized
     }
     
     override func setupLayouts() {
@@ -33,7 +33,7 @@ class WeatherDailyCell: AbstractTableViewCell {
         
         setupElement(element: tempNightLabel, constraints: [
             tempNightLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            tempNightLabel.leadingAnchor.constraint(equalTo: tempDayLabel.trailingAnchor, constant: 8),
+            tempNightLabel.leadingAnchor.constraint(equalTo: tempDayLabel.trailingAnchor, constant: 16),
             tempNightLabel.centerYAnchor.constraint(equalTo: dateLabel.centerYAnchor)
         ])
     }

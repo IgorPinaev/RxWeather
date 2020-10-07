@@ -16,7 +16,7 @@ class WeatherHourlyCollectionCell: UICollectionViewCell {
     
     func fill(hourlyData: WeatherHourlyData, now: Bool) {
         timeLabel.text = now ? "Сейчас" : hourlyData.dt.hour
-        tempLabel.text = hourlyData.temp.description
+        tempLabel.text = hourlyData.temp.intDesc
     }
     
     override init(frame: CGRect) {

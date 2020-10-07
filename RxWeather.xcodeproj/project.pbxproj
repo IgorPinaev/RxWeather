@@ -31,6 +31,7 @@
 		7DC154D6252CD4A800F6CF08 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7DC154D5252CD4A800F6CF08 /* Assets.xcassets */; };
 		7DC154D9252CD4A800F6CF08 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7DC154D7252CD4A800F6CF08 /* LaunchScreen.storyboard */; };
 		7DC154E1252CD62500F6CF08 /* WeatherController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DC154E0252CD62500F6CF08 /* WeatherController.swift */; };
+		7DFC33A0252E1D34009519E4 /* Double.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DFC339F252E1D34009519E4 /* Double.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -61,6 +62,7 @@
 		7DC154D8252CD4A800F6CF08 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7DC154DA252CD4A800F6CF08 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7DC154E0252CD62500F6CF08 /* WeatherController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherController.swift; sourceTree = "<group>"; };
+		7DFC339F252E1D34009519E4 /* Double.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Double.swift; sourceTree = "<group>"; };
 		A9D7E19948D731EA6595DC1A /* Pods-RxWeather.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RxWeather.debug.xcconfig"; path = "Target Support Files/Pods-RxWeather/Pods-RxWeather.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -95,6 +97,7 @@
 			children = (
 				0202CDFA252D926E005F6A48 /* UIView.swift */,
 				0202CE00252DAD33005F6A48 /* Date.swift */,
+				7DFC339F252E1D34009519E4 /* Double.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -348,6 +351,7 @@
 				7DC154E1252CD62500F6CF08 /* WeatherController.swift in Sources */,
 				7D33C67A252CD6FF004E06A3 /* ApiError.swift in Sources */,
 				0202CE04252DB696005F6A48 /* WeatherDailyData.swift in Sources */,
+				7DFC33A0252E1D34009519E4 /* Double.swift in Sources */,
 				0202CDFD252DA2B8005F6A48 /* WeatherHourlyData.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -67,7 +67,7 @@ extension WeatherController: UITableViewDataSource, UITableViewDelegate {
         if indexPath.row == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: WeatherCurrentCell.reuseId) as! WeatherCurrentCell
             let current = weather?.hourly.first
-            cell.fill(city: "London", desc: current?.weather.first?.description ?? "", temp: current?.temp.description ?? "")
+            cell.fill(city: "London", desc: current?.weather.first?.description ?? "", temp: current?.temp.intDesc ?? "")
             
             return cell
         } else if indexPath.row == 1 {

@@ -16,7 +16,7 @@ class WeatherCurrentCell: AbstractTableViewCell {
     func fill(city: String, desc: String, temp: String) {
         cityLabel.text = city
         descLabel.text = desc
-        tempLabel.text = temp
+        tempLabel.text = "\(temp) °C"
     }
     
     override func setupLayouts() {
