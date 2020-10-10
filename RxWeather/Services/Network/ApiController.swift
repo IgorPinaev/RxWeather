@@ -11,40 +11,40 @@ import RxSwift
 import RxCocoa
 
 class ApiController {
-    static let shared = ApiController()
+    private let jsonDecoder: JSONDecoder
     
-    func loadData<T: Decodable>(with type: T.Type,endpoint: EndpointProtocol) -> Observable<T> {
-        return perform(endpoint)
-            .flatMap {
-                return URLSession.shared.rx.data(request: $0)
-        }.flatMap { [weak self] in
-            return self?.parse(from: $0, with: T.self) ?? Observable.error(ApiError.unknownError)
+    init(decoder: JSONDecoder? = nil) {
+        if let decoder = decoder {
+            jsonDecoder = decoder
+        } else {
+            jsonDecoder = JSONDecoder()
+            jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
+            jsonDecoder.dateDecodingStrategy = .secondsSince1970
         }
     }
     
-    private func perform(_ endpoint: EndpointProtocol) -> Observable<URLRequest> {
+    func loadData<T: Decodable>(with type: T.Type, endpoint: EndpointProtocol) -> Observable<T> {
+        guard let request = perform(endpoint) else { return .error(ApiError.invalidURL)}
+        
+        return URLSession.shared.rx.data(request: request)
+            .map { [weak self] data -> T in
+                guard let self = self else { throw ApiError.dataNil}
+                return try self.parse(from: data, with: T.self)
+        }
+    }
+    
+    private func perform(_ endpoint: EndpointProtocol) -> URLRequest? {
         guard var urlComponents = URLComponents(string: endpoint.baseUrl + endpoint.path) else {
-            return Observable.error(ApiError.invalidURL)
+            return nil
         }
         
         urlComponents.queryItems = endpoint.params.map({URLQueryItem(name: $0.key, value: $0.value)})
         
-        if let url = urlComponents.url {
-            return Observable.just(URLRequest(url: url))
-        } else {
-            return Observable.error(ApiError.invalidURL)
-        }
+        guard let url = urlComponents.url else { return nil}
+        return URLRequest(url: url)
     }
     
-    private func parse<T:Decodable>(from data: Data, with type: T.Type) -> Observable<T> {
-        do {
-            let decoder = JSONDecoder()
-            decoder.keyDecodingStrategy = .convertFromSnakeCase
-            decoder.dateDecodingStrategy = .secondsSince1970
-            let response = try decoder.decode(T.self, from: data)
-            return Observable.just(response)
-        } catch {
-            return Observable.error(ApiError.decodingError)
-        }
+    private func parse<T:Decodable>(from data: Data, with type: T.Type) throws -> T {
+        return try jsonDecoder.decode(type, from: data)
     }
 }
