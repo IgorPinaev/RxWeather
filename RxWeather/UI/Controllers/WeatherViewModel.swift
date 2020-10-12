@@ -32,6 +32,7 @@ class WeatherViewModel {
                 guard let self = self else { throw ApiError.unknownError }
                 return self.apiController.loadData(with: OneCallResponse.self, endpoint: OpenWeather.oneCall(lat: 51.51, lon: -0.13))
             })
+            .share()
         
         let tableData = didRecieveResponse
             .materialize()
