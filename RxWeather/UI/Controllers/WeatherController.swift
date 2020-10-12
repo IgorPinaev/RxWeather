@@ -27,7 +27,13 @@ class WeatherController: UIViewController {
 }
 private extension WeatherController {
     func configureRx() {
-        let output = viewModel.configure()
+        let refreshSignal = customView.refreshControl.rx
+            .controlEvent(.primaryActionTriggered)
+            .asSignal()
+            
+        let input = WeatherViewModel.Input(refreshControlSignal: refreshSignal)
+        
+        let output = viewModel.configure(with: input)
         
         output.tableData
             .compactMap{$0.error}
@@ -37,6 +43,10 @@ private extension WeatherController {
         output.tableData
             .compactMap{ $0.element?.daily }
             .drive(customView.tableView.rx.items(cellIdentifier: WeatherDailyCell.reuseId, cellType: WeatherDailyCell.self)) { $2.fill(weather: $1) }
+            .disposed(by: disposeBag)
+        
+        output.isLoading
+            .drive(customView.refreshControl.rx.isRefreshing)
             .disposed(by: disposeBag)
     }
 }

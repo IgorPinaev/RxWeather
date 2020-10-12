@@ -10,6 +10,7 @@ import UIKit
 
 class WeatherView: UIView {
     let tableView = UITableView()
+    let refreshControl = UIRefreshControl()
     
     override init(frame: CGRect = .zero) {
         super.init(frame: frame)
@@ -31,6 +32,7 @@ private extension WeatherView {
     func setupTable() {
         addSubview(tableView)
         tableView.fillParent()
+        tableView.refreshControl = refreshControl
         
         tableView.register(WeatherCurrentCell.self, forCellReuseIdentifier: WeatherCurrentCell.reuseId)
         tableView.register(WeatherHourlyCell.self, forCellReuseIdentifier: WeatherHourlyCell.reuseId)

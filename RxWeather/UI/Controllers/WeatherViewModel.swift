@@ -12,15 +12,34 @@ import RxCocoa
 class WeatherViewModel {
     private let apiController = ApiController()
     
-    struct Output {
-        let tableData: Driver<Event<OneCallResponse>>
+    struct Input {
+        let refreshControlSignal: Signal<Void>
     }
     
-    func configure() -> Output {
-        let tableData = apiController.loadData(with: OneCallResponse.self, endpoint: OpenWeather.oneCall(lat: 51.51, lon: -0.13))
+    struct Output {
+        let tableData: Driver<Event<OneCallResponse>>
+        let isLoading: Driver<Bool>
+    }
+    
+    func configure(with input: Input) -> Output {
+        let startLoadingData = input.refreshControlSignal
+            .startWith(())
+            .asObservable()
+            .share()
+        
+        let didRecieveResponse = startLoadingData
+            .flatMapLatest({ [weak self] _ -> Observable<OneCallResponse> in
+                guard let self = self else { throw ApiError.unknownError }
+                return self.apiController.loadData(with: OneCallResponse.self, endpoint: OpenWeather.oneCall(lat: 51.51, lon: -0.13))
+            })
+        
+        let tableData = didRecieveResponse
             .materialize()
             .asDriver(onErrorJustReturn: .error(ApiError.unknownError))
         
-        return Output(tableData: tableData)
+        let isLoading = Observable.merge(startLoadingData.map{true}, didRecieveResponse.map{ _ in false })
+            .asDriver(onErrorJustReturn: false)
+        
+        return Output(tableData: tableData, isLoading: isLoading)
     }
 }
