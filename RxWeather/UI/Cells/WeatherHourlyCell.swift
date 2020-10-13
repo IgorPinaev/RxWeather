@@ -7,43 +7,50 @@
 //
 
 import UIKit
+import RxSwift
 
 class WeatherHourlyCell: AbstractTableViewCell {
-    private lazy var collectionView: UICollectionView = {
+    private var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         
-        let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collection.dataSource = self
-        collection.delegate = self
-        collection.register(WeatherHourlyCollectionCell.self, forCellWithReuseIdentifier: WeatherHourlyCollectionCell.reuseId)
-        
-        collection.backgroundColor = .clear
-        collection.showsHorizontalScrollIndicator = false
-        return collection
+        return UICollectionView(frame: .zero, collectionViewLayout: layout)
     }()
     
-    private var hourlyData = [WeatherHourlyData]()
+    private var disposeBag = DisposeBag()
     
     func fill(hourlyData: [WeatherHourlyData]) {
-        self.hourlyData = hourlyData
+        Observable.just(hourlyData)
+            .bind(to: collectionView.rx.items(cellIdentifier: WeatherHourlyCollectionCell.reuseId, cellType: WeatherHourlyCollectionCell.self)) { row, element, cell in
+                cell.fill(hourlyData: element, now: row == 0)
+        }
+        .disposed(by: disposeBag)
+        
+        collectionView.rx.setDelegate(self)
+            .disposed(by: disposeBag)
     }
     
     override func setupLayouts() {
+        addCollectionView()
+        configureCollectionView()
+    }
+    
+    private func addCollectionView() {
         addSubview(collectionView)
         collectionView.fillParent()
     }
-}
-extension WeatherHourlyCell: UICollectionViewDelegate, UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return hourlyData.count
+    
+    private func configureCollectionView() {
+        collectionView.register(WeatherHourlyCollectionCell.self, forCellWithReuseIdentifier: WeatherHourlyCollectionCell.reuseId)
+        
+        collectionView.backgroundColor = .clear
+        collectionView.showsHorizontalScrollIndicator = false
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: WeatherHourlyCollectionCell.reuseId, for: indexPath) as! WeatherHourlyCollectionCell
-        cell.fill(hourlyData: hourlyData[indexPath.item], now: indexPath.item == 0)
-        
-        return cell
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        disposeBag = DisposeBag()
     }
 }
 extension WeatherHourlyCell: UICollectionViewDelegateFlowLayout {
