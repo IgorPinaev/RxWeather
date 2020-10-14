@@ -9,9 +9,12 @@
 import RxSwift
 import RxCocoa
 import RxDataSources
+import CoreLocation
+import RxCoreLocation
 
 class WeatherViewModel {
     private let apiController = ApiController()
+    private let locationManager = CLLocationManager()
     
     struct Input {
         let refreshControlSignal: Signal<Void>
@@ -21,18 +24,45 @@ class WeatherViewModel {
         let tableData: Driver<[MultipleSectionModel]>
         let isLoading: Driver<Bool>
         let error: Signal<Error>
+        let showSettingsLink: Driver<Bool>
     }
     
     func configure(with input: Input) -> Output {
+        locationManager.distanceFilter = 10
+        locationManager.requestAlwaysAuthorization()
+        locationManager.startUpdatingLocation()
+        
         let startLoadingData = input.refreshControlSignal
             .startWith(())
             .asObservable()
             .share()
         
-        let response = startLoadingData
-            .flatMapLatest { [weak self] _ -> Observable<Event<OneCallResponse>> in
+        let status = locationManager.rx
+            .status
+            .map{ [.authorizedAlways, .authorizedWhenInUse].contains($0) }
+            .share()
+        
+        let updateStatus = locationManager.rx
+            .didChangeAuthorization
+            .map { [.authorizedAlways, .authorizedWhenInUse].contains($1) }
+            .share()
+        
+        let showSettingsLink = Observable.merge(status, updateStatus)
+            .asDriver(onErrorJustReturn: true)
+        
+        let location = startLoadingData
+            .flatMapLatest({ [weak self] _ -> Observable<CLLocation> in
                 guard let self = self else { throw ApiError.unknownError }
-                return self.apiController.loadData(with: OneCallResponse.self, endpoint: OpenWeather.oneCall(lat: 51.51, lon: -0.13))
+                return self.locationManager.rx
+                .location
+                .compactMap({ $0 })
+            })
+            .share()
+
+        let response = location
+            .flatMapLatest { [weak self] location -> Observable<Event<OneCallResponse>> in
+                guard let self = self else { throw ApiError.unknownError }
+                return self.apiController.loadData(with: OneCallResponse.self, endpoint: OpenWeather.oneCall(lat: location.coordinate.latitude, lon: location.coordinate.longitude))
                 .materialize()
             }
             .share()
@@ -51,7 +81,7 @@ class WeatherViewModel {
         let isLoading = Observable.merge(startLoadingData.map { true }, response.map { _ in false })
             .asDriver(onErrorJustReturn: false)
         
-        return Output(tableData: tableData, isLoading: isLoading, error: error)
+        return Output(tableData: tableData, isLoading: isLoading, error: error, showSettingsLink: showSettingsLink)
     }
 }
 private extension WeatherViewModel {

@@ -13,10 +13,10 @@ class WeatherDailyCell: AbstractTableViewCell {
     private var tempDayLabel = UILabel()
     private var tempNightLabel = UILabel()
     
-    func fill(weather: WeatherDailyData) {
-        tempDayLabel.text = weather.temp.day.intDesc
-        tempNightLabel.text = weather.temp.night.intDesc
-        dateLabel.text = weather.dt.day.capitalized
+    func fill(dailyData: WeatherDailyData) {
+        tempDayLabel.text = dailyData.temp.day.intDesc
+        tempNightLabel.text = dailyData.temp.night.intDesc
+        dateLabel.text = dailyData.dt.day.capitalized
     }
     
     override func setupLayouts() {

@@ -8,9 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0202CDED252D8477005F6A48 /* OpenWeather.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0202CDEC252D8477005F6A48 /* OpenWeather.swift */; };
-		0202CDF0252D863A005F6A48 /* WeatherResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0202CDEF252D863A005F6A48 /* WeatherResponse.swift */; };
 		0202CDF4252D89B0005F6A48 /* Weather.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0202CDF3252D89B0005F6A48 /* Weather.swift */; };
-		0202CDF6252D8BE5005F6A48 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0202CDF5252D8BE5005F6A48 /* Main.swift */; };
 		0202CDF8252D8DD7005F6A48 /* OneCallResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0202CDF7252D8DD7005F6A48 /* OneCallResponse.swift */; };
 		0202CDFB252D926E005F6A48 /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0202CDFA252D926E005F6A48 /* UIView.swift */; };
 		0202CDFD252DA2B8005F6A48 /* WeatherHourlyData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0202CDFC252DA2B8005F6A48 /* WeatherHourlyData.swift */; };
@@ -38,9 +36,7 @@
 
 /* Begin PBXFileReference section */
 		0202CDEC252D8477005F6A48 /* OpenWeather.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenWeather.swift; sourceTree = "<group>"; };
-		0202CDEF252D863A005F6A48 /* WeatherResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherResponse.swift; sourceTree = "<group>"; };
 		0202CDF3252D89B0005F6A48 /* Weather.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Weather.swift; sourceTree = "<group>"; };
-		0202CDF5252D8BE5005F6A48 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		0202CDF7252D8DD7005F6A48 /* OneCallResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneCallResponse.swift; sourceTree = "<group>"; };
 		0202CDFA252D926E005F6A48 /* UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
 		0202CDFC252DA2B8005F6A48 /* WeatherHourlyData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherHourlyData.swift; sourceTree = "<group>"; };
@@ -89,9 +85,7 @@
 				0202CDFC252DA2B8005F6A48 /* WeatherHourlyData.swift */,
 				0202CE03252DB696005F6A48 /* WeatherDailyData.swift */,
 				0202CE05252DB6DC005F6A48 /* DayTemp.swift */,
-				0202CDEF252D863A005F6A48 /* WeatherResponse.swift */,
 				0202CDF3252D89B0005F6A48 /* Weather.swift */,
-				0202CDF5252D8BE5005F6A48 /* Main.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -340,11 +334,9 @@
 				025C55A7252DCF3F002595CB /* WeatherHourlyCollectionCell.swift in Sources */,
 				0202CDFB252D926E005F6A48 /* UIView.swift in Sources */,
 				0202CE01252DAD33005F6A48 /* Date.swift in Sources */,
-				0202CDF0252D863A005F6A48 /* WeatherResponse.swift in Sources */,
 				0202CE06252DB6DC005F6A48 /* DayTemp.swift in Sources */,
 				0202CE0D252DB826005F6A48 /* WeatherCurrentCell.swift in Sources */,
 				0202CDED252D8477005F6A48 /* OpenWeather.swift in Sources */,
-				0202CDF6252D8BE5005F6A48 /* Main.swift in Sources */,
 				7D33C676252CD6CC004E06A3 /* EndpointProtocol.swift in Sources */,
 				7DC154D4252CD4A600F6CF08 /* RxWeather.xcdatamodeld in Sources */,
 				0202CDF4252D89B0005F6A48 /* Weather.swift in Sources */,

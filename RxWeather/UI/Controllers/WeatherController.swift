@@ -43,6 +43,19 @@ private extension WeatherController {
             }))
             .disposed(by: disposeBag)
         
+        output.showSettingsLink
+            .drive(customView.linkToSettingsView.rx.isHidden)
+            .disposed(by: disposeBag)
+        
+        customView.settingsButton.rx
+            .tap
+            .bind(onNext: {
+                if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(url)
+                }
+            })
+            .disposed(by: disposeBag)
+        
         customView.tableView.rx.setDelegate(self)
             .disposed(by: disposeBag)
         
@@ -74,7 +87,7 @@ private extension WeatherController {
                     
                 case let .dailyWeather(daily: daily):
                     let cell = table.dequeueReusableCell(withIdentifier: WeatherDailyCell.reuseId) as! WeatherDailyCell
-                    cell.fill(weather: daily)
+                    cell.fill(dailyData: daily)
                     return cell
                 }
         },

@@ -11,6 +11,8 @@ import UIKit
 class WeatherView: UIView {
     let tableView = UITableView()
     let refreshControl = UIRefreshControl()
+    let linkToSettingsView = UIView()
+    let settingsButton = UIButton()
     
     override init(frame: CGRect = .zero) {
         super.init(frame: frame)
@@ -27,6 +29,7 @@ private extension WeatherView {
         backgroundColor = .white
         
         setupTable()
+        setupLinkToSettingsView()
     }
     
     func setupTable() {
@@ -40,5 +43,22 @@ private extension WeatherView {
         
         tableView.tableFooterView = UIView()
         tableView.allowsSelection = false
+    }
+    
+    func setupLinkToSettingsView() {
+        linkToSettingsView.backgroundColor = .green
+        addSubview(linkToSettingsView)
+        linkToSettingsView.fillParent()
+        
+        linkToSettingsView.addSubview(settingsButton)
+        
+        settingsButton.translatesAutoresizingMaskIntoConstraints = false
+        settingsButton.setTitle("В настройки", for: .normal)
+        settingsButton.setTitleColor(.black, for: .normal)
+        
+        NSLayoutConstraint.activate([
+            settingsButton.centerYAnchor.constraint(equalTo: linkToSettingsView.centerYAnchor),
+            settingsButton.centerXAnchor.constraint(equalTo: linkToSettingsView.centerXAnchor)
+        ])
     }
 }
