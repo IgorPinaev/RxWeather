@@ -8,6 +8,7 @@
 
 import UIKit
 import RxSwift
+import RxCocoa
 import RxDataSources
 
 class WeatherController: UIViewController {
@@ -28,41 +29,34 @@ class WeatherController: UIViewController {
 private extension WeatherController {
     func configureRx() {
         let refreshSignal = customView.refreshControl.rx
-            .controlEvent(.primaryActionTriggered)
+            .controlEvent(.valueChanged)
             .asSignal()
         
         let input = WeatherViewModel.Input(refreshControlSignal: refreshSignal)
         
         let output = viewModel.configure(with: input)
         
-        output.tableData
-            .compactMap{$0.error}
-            .drive(onNext: {print($0)})
+        output
+            .error
+            .emit(to: Binder(self, binding: { (self, error) in
+                self.show(error)
+            }))
             .disposed(by: disposeBag)
-        
-        let dataSource = getDataSource()
         
         customView.tableView.rx.setDelegate(self)
             .disposed(by: disposeBag)
         
         output.tableData
-            .compactMap { (response) -> [MultipleSectionModel]? in
-                guard let element = response.element else { return nil }
-                
-                return [
-                    .todaySection(title: "Today", response: [
-                        .currentWeather(city: "London", desc: element.current.weather.first?.description ?? "", temp: element.current.temp.intDesc ?? ""),
-                        .hourlyWeather(hourly: element.hourly)
-                    ]),
-                    .dailySection(title: "Daily", dailyData: element.daily.map({ SectionItem.dailyWeather(daily: $0)}))
-                ]
-        }
-        .drive(customView.tableView.rx.items(dataSource: dataSource))
-        .disposed(by: disposeBag)
+            .drive(customView.tableView.rx.items(dataSource: getDataSource()))
+            .disposed(by: disposeBag)
         
         output.isLoading
             .drive(customView.refreshControl.rx.isRefreshing)
             .disposed(by: disposeBag)
+    }
+    
+    func show(_ error: Error) {
+        print(error)
     }
     
     func getDataSource() -> RxTableViewSectionedReloadDataSource<MultipleSectionModel> {
@@ -93,48 +87,6 @@ private extension WeatherController {
 }
 extension WeatherController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return indexPath.row == 1 ? 80 : UITableView.automaticDimension
-    }
-}
-
-enum MultipleSectionModel {
-    case todaySection(title: String, response: [SectionItem])
-    case dailySection(title: String, dailyData: [SectionItem])
-}
-
-enum SectionItem {
-    case currentWeather(city: String, desc: String, temp: String)
-    case hourlyWeather(hourly: [WeatherHourlyData])
-    case dailyWeather(daily: WeatherDailyData)
-}
-
-extension MultipleSectionModel: SectionModelType {
-    typealias Item = SectionItem
-    
-    var items: [SectionItem] {
-        switch self {
-        case .todaySection(title: _, response: let items):
-            return items.map { $0 }
-        case .dailySection(title: _, dailyData: let dailyData):
-            return dailyData.map { $0 }
-        }
-    }
-    
-    var title: String {
-        switch self {
-        case .todaySection(title: let title, response: _):
-            return title
-        case .dailySection(title: let title, dailyData: _):
-            return title
-        }
-    }
-    
-    init(original: MultipleSectionModel, items: [Item]) {
-        switch original {
-        case let .todaySection(title: title, response: _):
-            self = .todaySection(title: title, response: items)
-        case .dailySection(title: let title, dailyData: let dailyData):
-            self = .dailySection(title: title, dailyData: dailyData)
-        }
+        return indexPath.section == 0 && indexPath.row == 1 ? 80 : UITableView.automaticDimension
     }
 }
