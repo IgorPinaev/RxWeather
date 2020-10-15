@@ -1,5 +1,5 @@
 //
-//  WeatherController.swift
+//  WeatherLocationController.swift
 //  RxWeather
 //
 //  Created by Игорь Пинаев on 06.10.2020.
@@ -11,9 +11,9 @@ import RxSwift
 import RxCocoa
 import RxDataSources
 
-class WeatherController: UIViewController {
-    private let customView = WeatherView()
-    private let viewModel = WeatherViewModel()
+class WeatherLocationController: UIViewController {
+    private let customView = WeatherLocationView()
+    private let viewModel = WeatherLocationViewModel()
     private let disposeBag = DisposeBag()
     
     override func loadView() {
@@ -26,13 +26,13 @@ class WeatherController: UIViewController {
         configureRx()
     }
 }
-private extension WeatherController {
+private extension WeatherLocationController {
     func configureRx() {
         let refreshSignal = customView.refreshControl.rx
             .controlEvent(.valueChanged)
             .asSignal()
         
-        let input = WeatherViewModel.Input(refreshControlSignal: refreshSignal)
+        let input = WeatherLocationViewModel.Input(refreshControlSignal: refreshSignal)
         
         let output = viewModel.configure(with: input)
         
@@ -98,7 +98,7 @@ private extension WeatherController {
         )
     }
 }
-extension WeatherController: UITableViewDelegate {
+extension WeatherLocationController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return indexPath.section == 0 && indexPath.row == 1 ? 80 : UITableView.automaticDimension
     }

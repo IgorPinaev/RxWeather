@@ -1,5 +1,5 @@
 //
-//  WeatherViewModel.swift
+//  WeatherLocationViewModel.swift
 //  RxWeather
 //
 //  Created by Игорь Пинаев on 10.10.2020.
@@ -12,7 +12,7 @@ import RxDataSources
 import CoreLocation
 import RxCoreLocation
 
-class WeatherViewModel {
+class WeatherLocationViewModel {
     private let apiController = ApiController()
     private let locationManager = CLLocationManager()
     
@@ -89,7 +89,7 @@ class WeatherViewModel {
         return Output(tableData: tableData, isLoading: isLoading, error: error, showSettingsLink: showSettingsLink)
     }
 }
-private extension WeatherViewModel {
+private extension WeatherLocationViewModel {
     func getSections(response: OneCallResponse, name: String?) -> [MultipleSectionModel] {
         return [.todaySection(title: "Today", response: [
             .currentWeather(city: name ?? "", desc: response.current.weather.first?.description ?? "", temp: response.current.temp.intDesc ?? ""),

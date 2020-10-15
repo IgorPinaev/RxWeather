@@ -9,7 +9,7 @@
 import Foundation
 
 enum OpenWeather {
-    case city(_ city: String)
+    case find(_ city: String)
     case oneCall(lat: Double, lon: Double)
 }
 extension OpenWeather: EndpointProtocol {
@@ -19,8 +19,8 @@ extension OpenWeather: EndpointProtocol {
     
     var path: String {
         switch self {
-        case .city(_):
-            return "weather"
+        case .find(_):
+            return "find"
         case .oneCall(lat: _, lon: _):
             return "onecall"
         }
@@ -30,7 +30,7 @@ extension OpenWeather: EndpointProtocol {
         var params = ["appid": "e382f69da8950542f476171cc68678de", "lang": "ru", "units": "metric"]
         
         switch self {
-        case let .city(city):
+        case let .find(city):
             params["q"] = city
         case let .oneCall(lat: lat, lon: lon):
             params["lat"] = "\(lat)"

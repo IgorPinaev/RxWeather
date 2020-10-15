@@ -1,5 +1,5 @@
 //
-//  WeatherView.swift
+//  WeatherLocationView.swift
 //  RxWeather
 //
 //  Created by Игорь Пинаев on 10.10.2020.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class WeatherView: UIView {
+class WeatherLocationView: UIView {
     let tableView = UITableView()
     let refreshControl = UIRefreshControl()
     let linkToSettingsView = UIView()
@@ -24,7 +24,7 @@ class WeatherView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 }
-private extension WeatherView {
+private extension WeatherLocationView {
     func configureView() {
         backgroundColor = .white
         
