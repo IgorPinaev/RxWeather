@@ -39,7 +39,7 @@ class WeatherViewModel {
         
         let status = locationManager.rx
             .status
-            .map{ [.authorizedAlways, .authorizedWhenInUse].contains($0) }
+            .map { [.authorizedAlways, .authorizedWhenInUse].contains($0) }
             .share()
         
         let updateStatus = locationManager.rx
@@ -59,11 +59,15 @@ class WeatherViewModel {
             })
             .share()
 
+        let placemark = locationManager.rx
+            .placemark
+            .compactMap{ $0 }
+        
         let response = location
             .flatMapLatest { [weak self] location -> Observable<Event<OneCallResponse>> in
                 guard let self = self else { throw ApiError.unknownError }
                 return self.apiController.loadData(with: OneCallResponse.self, endpoint: OpenWeather.oneCall(lat: location.coordinate.latitude, lon: location.coordinate.longitude))
-                .materialize()
+                    .materialize()
             }
             .share()
         
@@ -72,10 +76,11 @@ class WeatherViewModel {
             .asSignal(onErrorJustReturn: ApiError.unknownError)
         
         let tableData = response
-            .compactMap { [weak self] response -> [MultipleSectionModel]? in
-                guard let element = response.element else { return nil }
-                return self?.getSections(response: element)
-            }
+            .compactMap { $0.element }
+            .withLatestFrom(placemark) { ($0, $1.locality) }
+            .map({ [weak self] in
+                return self?.getSections(response: $0.0, name: $0.1) ?? []
+            })
             .asDriver(onErrorJustReturn: [])
 
         let isLoading = Observable.merge(startLoadingData.map { true }, response.map { _ in false })
@@ -85,9 +90,9 @@ class WeatherViewModel {
     }
 }
 private extension WeatherViewModel {
-    func getSections(response: OneCallResponse) -> [MultipleSectionModel] {
+    func getSections(response: OneCallResponse, name: String?) -> [MultipleSectionModel] {
         return [.todaySection(title: "Today", response: [
-            .currentWeather(city: "London", desc: response.current.weather.first?.description ?? "", temp: response.current.temp.intDesc ?? ""),
+            .currentWeather(city: name ?? "", desc: response.current.weather.first?.description ?? "", temp: response.current.temp.intDesc ?? ""),
             .hourlyWeather(hourly: response.hourly)
         ]),
          .dailySection(title: "Daily", dailyData: response.daily.map({ SectionItem.dailyWeather(daily: $0)}))]
