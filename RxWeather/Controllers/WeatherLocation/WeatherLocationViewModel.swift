@@ -8,13 +8,12 @@
 
 import RxSwift
 import RxCocoa
-import RxDataSources
 import CoreLocation
 import RxCoreLocation
 
-class WeatherLocationViewModel {
-    private let apiController = ApiController()
+class WeatherLocationViewModel: AbstractWeatherViewModel {
     private let locationManager = CLLocationManager()
+    private let disposeBag = DisposeBag()
     
     struct Input {
         let refreshControlSignal: Signal<Void>
@@ -29,8 +28,6 @@ class WeatherLocationViewModel {
     
     func configure(with input: Input) -> Output {
         locationManager.distanceFilter = 10
-        locationManager.requestAlwaysAuthorization()
-        locationManager.startUpdatingLocation()
         
         let startLoadingData = input.refreshControlSignal
             .startWith(())
@@ -47,18 +44,32 @@ class WeatherLocationViewModel {
             .map { [.authorizedAlways, .authorizedWhenInUse].contains($1) }
             .share()
         
-        let showSettingsLink = Observable.merge(status, updateStatus)
+        let observableStatus = Observable.merge(status, updateStatus)
+            .share()
+        
+        observableStatus
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else { return }
+                if $0 {
+                    self.locationManager.startUpdatingLocation()
+                } else {
+                    self.locationManager.requestAlwaysAuthorization()
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        let showSettingsLink = observableStatus
             .asDriver(onErrorJustReturn: true)
         
         let location = startLoadingData
             .flatMapLatest({ [weak self] _ -> Observable<CLLocation> in
                 guard let self = self else { throw ApiError.unknownError }
                 return self.locationManager.rx
-                .location
-                .compactMap({ $0 })
+                    .location
+                    .compactMap({ $0 })
             })
             .share()
-
+        
         let placemark = locationManager.rx
             .placemark
             .compactMap{ $0 }
@@ -68,8 +79,8 @@ class WeatherLocationViewModel {
                 guard let self = self else { throw ApiError.unknownError }
                 return self.apiController.loadData(with: OneCallResponse.self, endpoint: OpenWeather.oneCall(lat: location.coordinate.latitude, lon: location.coordinate.longitude))
                     .materialize()
-            }
-            .share()
+        }
+        .share()
         
         let error = response
             .compactMap { $0.error }
@@ -82,61 +93,10 @@ class WeatherLocationViewModel {
                 return self?.getSections(response: $0.0, name: $0.1) ?? []
             })
             .asDriver(onErrorJustReturn: [])
-
+        
         let isLoading = Observable.merge(startLoadingData.map { true }, response.map { _ in false })
             .asDriver(onErrorJustReturn: false)
         
         return Output(tableData: tableData, isLoading: isLoading, error: error, showSettingsLink: showSettingsLink)
-    }
-}
-private extension WeatherLocationViewModel {
-    func getSections(response: OneCallResponse, name: String?) -> [MultipleSectionModel] {
-        return [.todaySection(title: "Today", response: [
-            .currentWeather(city: name ?? "", desc: response.current.weather.first?.description ?? "", temp: response.current.temp.intDesc ?? ""),
-            .hourlyWeather(hourly: response.hourly)
-        ]),
-         .dailySection(title: "Daily", dailyData: response.daily.map({ SectionItem.dailyWeather(daily: $0)}))]
-    }
-}
-
-enum MultipleSectionModel {
-    case todaySection(title: String, response: [SectionItem])
-    case dailySection(title: String, dailyData: [SectionItem])
-}
-
-enum SectionItem {
-    case currentWeather(city: String, desc: String, temp: String)
-    case hourlyWeather(hourly: [WeatherHourlyData])
-    case dailyWeather(daily: WeatherDailyData)
-}
-
-extension MultipleSectionModel: SectionModelType {
-    typealias Item = SectionItem
-    
-    var items: [SectionItem] {
-        switch self {
-        case .todaySection(title: _, response: let items):
-            return items.map { $0 }
-        case .dailySection(title: _, dailyData: let dailyData):
-            return dailyData.map { $0 }
-        }
-    }
-    
-    var title: String {
-        switch self {
-        case .todaySection(title: let title, response: _):
-            return title
-        case .dailySection(title: let title, dailyData: _):
-            return title
-        }
-    }
-    
-    init(original: MultipleSectionModel, items: [Item]) {
-        switch original {
-        case let .todaySection(title: title, response: _):
-            self = .todaySection(title: title, response: items)
-        case .dailySection(title: let title, dailyData: let dailyData):
-            self = .dailySection(title: title, dailyData: dailyData)
-        }
     }
 }
