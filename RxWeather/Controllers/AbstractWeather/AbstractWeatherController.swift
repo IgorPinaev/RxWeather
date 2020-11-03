@@ -8,8 +8,11 @@
 
 import UIKit
 import RxDataSources
+import RxSwift
 
 class AbstractWeatherController: UIViewController {
+    let disposeBag = DisposeBag()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureRx()
@@ -35,11 +38,11 @@ class AbstractWeatherController: UIViewController {
                     cell.fill(dailyData: daily)
                     return cell
                 }
-        },
+            },
             titleForHeaderInSection: { dataSource, index in
                 let section = dataSource[index]
                 return section.title
-        }
+            }
         )
     }
 }

@@ -31,12 +31,42 @@ private extension FindCityController {
             .distinctUntilChanged()
             .asSignal(onErrorJustReturn: nil)
         
-        let input = FindCityViewModel.Input(searchSignal: searchSignal)
+        let itemSelectedSignal = customView.tableView.rx.itemSelected
+            .asSignal()
+        
+        itemSelectedSignal
+            .emit(to: Binder(self, binding: { (self, indexPath) in
+                self.customView.tableView.deselectRow(at: indexPath, animated: true)
+            }))
+            .disposed(by: disposeBag)
+        
+        let input = FindCityViewModel.Input(searchSignal: searchSignal, itemSelectedSignal: itemSelectedSignal)
         
         let output = viewModel.configure(with: input)
         
         output.tableData
             .drive(customView.tableView.rx.items(cellIdentifier: FindCityCell.reuseId, cellType: FindCityCell.self)) { $2.fill(city: $1) }
-        .disposed(by: disposeBag)
+            .disposed(by: disposeBag)
+        
+        output
+            .error
+            .emit(to: Binder(self, binding: { (self, error) in
+                self.show(error)
+            }))
+            .disposed(by: disposeBag)
+        
+        output.selectedItem
+            .compactMap { $0 }
+            .emit(to: Binder(self, binding: { (self, weatherCity) in
+                let controller = WeatherCityController()
+                controller.name = weatherCity.name
+                controller.lat = weatherCity.lat
+                controller.lon = weatherCity.lon
+                
+                let destinationNavigationController = UINavigationController()
+                destinationNavigationController.setViewControllers([controller], animated: false)
+                self.present(destinationNavigationController, animated: true)
+            }))
+            .disposed(by: disposeBag)
     }
 }

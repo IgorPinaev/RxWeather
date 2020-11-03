@@ -6,14 +6,11 @@
 //  Copyright © 2020 Igor Pinaev. All rights reserved.
 //
 
-import UIKit
-import RxSwift
 import RxCocoa
 
 class WeatherLocationController: AbstractWeatherController {
     private let customView = WeatherLocationView()
     private let viewModel = WeatherLocationViewModel()
-    private let disposeBag = DisposeBag()
     
     override func loadView() {
         view = customView

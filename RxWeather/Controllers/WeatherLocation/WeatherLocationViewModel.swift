@@ -15,10 +15,6 @@ class WeatherLocationViewModel: AbstractWeatherViewModel {
     private let locationManager = CLLocationManager()
     private let disposeBag = DisposeBag()
     
-    struct Input {
-        let refreshControlSignal: Signal<Void>
-    }
-    
     struct Output {
         let tableData: Driver<[MultipleSectionModel]>
         let isLoading: Driver<Bool>
@@ -79,8 +75,8 @@ class WeatherLocationViewModel: AbstractWeatherViewModel {
                 guard let self = self else { throw ApiError.unknownError }
                 return self.apiController.loadData(with: OneCallResponse.self, endpoint: OpenWeather.oneCall(lat: location.coordinate.latitude, lon: location.coordinate.longitude))
                     .materialize()
-        }
-        .share()
+            }
+            .share()
         
         let error = response
             .compactMap { $0.error }

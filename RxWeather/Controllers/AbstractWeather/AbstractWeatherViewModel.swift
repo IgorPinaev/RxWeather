@@ -7,16 +7,21 @@
 //
 
 import RxDataSources
+import RxCocoa
 
 class AbstractWeatherViewModel {
     let apiController = ApiController()
+    
+    struct Input {
+        let refreshControlSignal: Signal<Void>
+    }
     
     func getSections(response: OneCallResponse, name: String?) -> [MultipleSectionModel] {
         return [.todaySection(title: "Today", response: [
             .currentWeather(city: name ?? "", desc: response.current.weather.first?.description ?? "", temp: response.current.temp.intDesc ?? ""),
             .hourlyWeather(hourly: response.hourly)
         ]),
-                .dailySection(title: "Daily", dailyData: response.daily.map({ SectionItem.dailyWeather(daily: $0)}))]
+        .dailySection(title: "Daily", dailyData: response.daily.map({ SectionItem.dailyWeather(daily: $0)}))]
     }
 }
 

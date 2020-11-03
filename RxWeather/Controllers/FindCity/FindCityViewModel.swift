@@ -14,39 +14,42 @@ class FindCityViewModel {
     
     struct Input {
         let searchSignal: Signal<String?>
+        let itemSelectedSignal: Signal<IndexPath>
     }
     
     struct Output {
         let tableData: Driver<[WeatherCity]>
-        let isLoading: Driver<Bool>
         let error: Signal<Error>
+        let selectedItem: Signal<WeatherCity?>
     }
     
     func configure(with input: Input) -> Output {
-        let startLoadingData = input.searchSignal
+        let response = input.searchSignal
             .asObservable()
-            .share()
-        
-        let response = startLoadingData
             .compactMap { $0 }
-            .flatMapLatest { [weak self] city -> Observable<Event<WeatherCityList>> in
-                guard let self = self else { throw ApiError.unknownError }
+            .flatMapLatest { [unowned self] city -> Observable<Event<WeatherCityList>> in
                 return self.apiController.loadData(with: WeatherCityList.self, endpoint: OpenWeather.find(city))
                     .materialize()
             }
             .share()
         
         let error = response
-            .compactMap {$0.error}
+            .compactMap { $0.error }
             .asSignal(onErrorJustReturn: ApiError.unknownError)
         
         let tableData = response
             .compactMap { $0.element?.list }
+            .share()
+
+        let selectedItem = input.itemSelectedSignal
+            .asObservable()
+            .withLatestFrom(tableData) { ($0, $1) }
+            .map { $1[$0.row] }
+            .asSignal(onErrorJustReturn: nil)
+        
+        let tableDataDriver = tableData
             .asDriver(onErrorJustReturn: [])
         
-        let isLoading = Observable.merge(startLoadingData.map { _ in true }, response.map { _ in false })
-            .asDriver(onErrorJustReturn: false)
-        
-        return Output(tableData: tableData, isLoading: isLoading, error: error)
+        return Output(tableData: tableDataDriver, error: error, selectedItem: selectedItem)
     }
 }
