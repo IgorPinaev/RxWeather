@@ -21,11 +21,22 @@ class WeatherCityController: AbstractWeatherController {
     }
     
     override func configureRx() {
+        configureNavigationController()
+        
         let refreshSignal = customView.refreshControl.rx
             .controlEvent(.valueChanged)
             .asSignal()
         
-        let input = WeatherCityViewModel.Input(refreshControlSignal: refreshSignal)
+        navigationItem.leftBarButtonItem?.rx.tap
+            .bind(to: Binder(self, binding: { (self, _) in
+                self.dismiss(animated: true, completion: nil)
+            }))
+            .disposed(by: disposeBag)
+        
+        let addButtonSignal = navigationItem.rightBarButtonItem?.rx.tap
+            .asSignal()
+        
+        let input = WeatherCityViewModel.Input(refreshControlSignal: refreshSignal, addButtonSignal: addButtonSignal)
         
         viewModel.name = name
         viewModel.lat = lat
@@ -50,5 +61,11 @@ class WeatherCityController: AbstractWeatherController {
         output.isLoading
             .drive(customView.refreshControl.rx.isRefreshing)
             .disposed(by: disposeBag)
+    }
+}
+private extension WeatherCityController {
+    func configureNavigationController() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Отмена", style: .plain, target: self, action: nil)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Добавить", style: .done, target: self, action: nil)
     }
 }

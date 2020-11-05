@@ -14,6 +14,11 @@ class WeatherCityViewModel: AbstractWeatherViewModel {
     var lat: Double?
     var lon: Double?
     
+    struct Input {
+        let refreshControlSignal: Signal<Void>
+        let addButtonSignal: Signal<Void>?
+    }
+    
     struct Output {
         let tableData: Driver<[MultipleSectionModel]>
         let isLoading: Driver<Bool>

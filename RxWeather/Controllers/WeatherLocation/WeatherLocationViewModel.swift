@@ -15,6 +15,10 @@ class WeatherLocationViewModel: AbstractWeatherViewModel {
     private let locationManager = CLLocationManager()
     private let disposeBag = DisposeBag()
     
+    struct Input {
+        let refreshControlSignal: Signal<Void>
+    }
+    
     struct Output {
         let tableData: Driver<[MultipleSectionModel]>
         let isLoading: Driver<Bool>
