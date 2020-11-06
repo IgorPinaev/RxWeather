@@ -10,9 +10,7 @@ import RxSwift
 import RxCocoa
 
 class WeatherCityViewModel: AbstractWeatherViewModel {
-    var name: String?
-    var lat: Double?
-    var lon: Double?
+    var city: WeatherCity?
     
     struct Input {
         let refreshControlSignal: Signal<Void>
@@ -23,6 +21,7 @@ class WeatherCityViewModel: AbstractWeatherViewModel {
         let tableData: Driver<[MultipleSectionModel]>
         let isLoading: Driver<Bool>
         let error: Signal<Error>
+        let showAddLocalButton: Driver<Bool>
     }
     
     func configure(with input: Input) -> Output {
@@ -33,8 +32,8 @@ class WeatherCityViewModel: AbstractWeatherViewModel {
         
         let response = startLoadingData
             .flatMapLatest { [weak self] location -> Observable<Event<OneCallResponse>> in
-                guard let self = self, let lat = self.lat, let lon = self.lon else { throw ApiError.unknownError }
-                return self.apiController.loadData(with: OneCallResponse.self, endpoint: OpenWeather.oneCall(lat: lat, lon: lon))
+                guard let self = self, let city = self.city else { throw ApiError.unknownError }
+                return self.apiController.loadData(with: OneCallResponse.self, endpoint: OpenWeather.oneCall(lat: city.lat, lon: city.lon))
                     .materialize()
             }
             .share()
@@ -46,13 +45,17 @@ class WeatherCityViewModel: AbstractWeatherViewModel {
         let tableData = response
             .compactMap { $0.element }
             .map({ [weak self] in
-                return self?.getSections(response: $0, name: self?.name ?? "") ?? []
+                return self?.getSections(response: $0, name: self?.city?.name ?? "") ?? []
             })
             .asDriver(onErrorJustReturn: [])
         
         let isLoading = Observable.merge(startLoadingData.map { true }, response.map { _ in false })
             .asDriver(onErrorJustReturn: false)
         
-        return Output(tableData: tableData, isLoading: isLoading, error: error)
+        let showAddLocalButton = Observable.just(city)
+            .map{ $0?.id == 1496153 }
+            .asDriver(onErrorJustReturn: false)
+            
+        return Output(tableData: tableData, isLoading: isLoading, error: error, showAddLocalButton: showAddLocalButton)
     }
 }

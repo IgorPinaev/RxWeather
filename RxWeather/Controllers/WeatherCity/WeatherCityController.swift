@@ -12,9 +12,7 @@ class WeatherCityController: AbstractWeatherController {
     private let customView = AbstractWeatherView()
     private let viewModel = WeatherCityViewModel()
     
-    var name: String?
-    var lat: Double?
-    var lon: Double?
+    var city: WeatherCity?
     
     override func loadView() {
         view = customView
@@ -38,9 +36,7 @@ class WeatherCityController: AbstractWeatherController {
         
         let input = WeatherCityViewModel.Input(refreshControlSignal: refreshSignal, addButtonSignal: addButtonSignal)
         
-        viewModel.name = name
-        viewModel.lat = lat
-        viewModel.lon = lon
+        viewModel.city = city
         
         let output = viewModel.configure(with: input)
         
@@ -61,6 +57,12 @@ class WeatherCityController: AbstractWeatherController {
         output.isLoading
             .drive(customView.refreshControl.rx.isRefreshing)
             .disposed(by: disposeBag)
+        
+        if let rightBarButtonItem = navigationItem.rightBarButtonItem {
+            output.showAddLocalButton
+                .drive(rightBarButtonItem.rx.isEnabled)
+                .disposed(by: disposeBag)
+        }
     }
 }
 private extension WeatherCityController {

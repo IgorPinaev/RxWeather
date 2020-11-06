@@ -19,15 +19,11 @@ class WeatherCity: Decodable {
     let lon: Double
     let temp: Double
     let country: String
-    let dt: Date
-    let weather: [Weather]
     
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(Int.self, forKey: .id)
         name = try container.decode(String.self, forKey: .name)
-        dt = try container.decode(Date.self, forKey: .dt)
-        weather = try container.decode([Weather].self, forKey: .weather)
         
         let coordContainer = try container.nestedContainer(keyedBy: CoordCodingKeys.self, forKey: .coord)
         lat = try coordContainer.decode(Double.self, forKey: .lat)

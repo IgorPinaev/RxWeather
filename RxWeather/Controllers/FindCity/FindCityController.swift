@@ -59,9 +59,7 @@ private extension FindCityController {
             .compactMap { $0 }
             .emit(to: Binder(self, binding: { (self, weatherCity) in
                 let controller = WeatherCityController()
-                controller.name = weatherCity.name
-                controller.lat = weatherCity.lat
-                controller.lon = weatherCity.lon
+                controller.city = weatherCity
                 
                 let destinationNavigationController = UINavigationController()
                 destinationNavigationController.setViewControllers([controller], animated: false)
