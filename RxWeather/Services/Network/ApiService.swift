@@ -1,5 +1,5 @@
 //
-//  ApiController.swift
+//  ApiService.swift
 //  RxWeather
 //
 //  Created by Игорь Пинаев on 06.10.2020.
@@ -10,7 +10,7 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-class ApiController {
+class ApiService {
     private let jsonDecoder: JSONDecoder
     
     init(decoder: JSONDecoder? = nil) {

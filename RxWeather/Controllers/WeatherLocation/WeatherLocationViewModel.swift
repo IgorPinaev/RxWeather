@@ -77,7 +77,7 @@ class WeatherLocationViewModel: AbstractWeatherViewModel {
         let response = location
             .flatMapLatest { [weak self] location -> Observable<Event<OneCallResponse>> in
                 guard let self = self else { throw ApiError.unknownError }
-                return self.apiController.loadData(with: OneCallResponse.self, endpoint: OpenWeather.oneCall(lat: location.coordinate.latitude, lon: location.coordinate.longitude))
+                return self.apiService.loadData(with: OneCallResponse.self, endpoint: OpenWeather.oneCall(lat: location.coordinate.latitude, lon: location.coordinate.longitude))
                     .materialize()
             }
             .share()

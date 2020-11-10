@@ -10,7 +10,7 @@ import RxDataSources
 import RxCocoa
 
 class AbstractWeatherViewModel {
-    let apiController = ApiController()
+    let apiService = ApiService()
 
     func getSections(response: OneCallResponse, name: String?) -> [MultipleSectionModel] {
         return [.todaySection(title: "Today", response: [

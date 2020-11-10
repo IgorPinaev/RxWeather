@@ -10,7 +10,7 @@ import RxSwift
 import RxCocoa
 
 class FindCityViewModel {
-    private let apiController = ApiController()
+    private let apiService = ApiService()
     
     struct Input {
         let searchSignal: Signal<String?>
@@ -28,7 +28,7 @@ class FindCityViewModel {
             .asObservable()
             .compactMap { $0 }
             .flatMapLatest { [unowned self] city -> Observable<Event<WeatherCityList>> in
-                return self.apiController.loadData(with: WeatherCityList.self, endpoint: OpenWeather.find(city))
+                return self.apiService.loadData(with: WeatherCityList.self, endpoint: OpenWeather.find(city))
                     .materialize()
             }
             .share()

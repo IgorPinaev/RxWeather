@@ -8,6 +8,7 @@
 
 import RxSwift
 import RxCocoa
+import CoreData
 
 class WeatherCityViewModel: AbstractWeatherViewModel {
     var city: WeatherCity?
@@ -22,6 +23,7 @@ class WeatherCityViewModel: AbstractWeatherViewModel {
         let isLoading: Driver<Bool>
         let error: Signal<Error>
         let showAddLocalButton: Driver<Bool>
+        let additionCity: Signal<Void>?
     }
     
     func configure(with input: Input) -> Output {
@@ -33,7 +35,7 @@ class WeatherCityViewModel: AbstractWeatherViewModel {
         let response = startLoadingData
             .flatMapLatest { [weak self] location -> Observable<Event<OneCallResponse>> in
                 guard let self = self, let city = self.city else { throw ApiError.unknownError }
-                return self.apiController.loadData(with: OneCallResponse.self, endpoint: OpenWeather.oneCall(lat: city.lat, lon: city.lon))
+                return self.apiService.loadData(with: OneCallResponse.self, endpoint: OpenWeather.oneCall(lat: city.lat, lon: city.lon))
                     .materialize()
             }
             .share()
@@ -52,10 +54,29 @@ class WeatherCityViewModel: AbstractWeatherViewModel {
         let isLoading = Observable.merge(startLoadingData.map { true }, response.map { _ in false })
             .asDriver(onErrorJustReturn: false)
         
+        let additionCity = input.addButtonSignal?
+            .asObservable()
+            .do(onNext: { [weak self] _ in
+                guard let self = self, let city = self.city else { return }
+                WeatherCityLocal.from(struct: city)
+            })
+            .asSignal(onErrorJustReturn: ())
+        
         let showAddLocalButton = Observable.just(city)
-            .map{ $0?.id == 1496153 }
+            .map{ self.fetchCity(id: $0?.id) }
             .asDriver(onErrorJustReturn: false)
-            
-        return Output(tableData: tableData, isLoading: isLoading, error: error, showAddLocalButton: showAddLocalButton)
+        
+        return Output(tableData: tableData, isLoading: isLoading, error: error, showAddLocalButton: showAddLocalButton, additionCity: additionCity)
+    }
+}
+private extension WeatherCityViewModel {
+    func fetchCity(id: Int?) -> Bool {
+        guard let id = id else { return false }
+        let request = NSFetchRequest<WeatherCityLocal>(entityName: "WeatherCityLocal")
+        request.predicate = NSPredicate(format: "id == %@", NSNumber(value: id))
+        
+        let array = try? CoreDataService.instance.managedObjectContext.fetch(request)
+        
+        return array == nil || array!.isEmpty
     }
 }

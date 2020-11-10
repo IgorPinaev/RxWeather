@@ -27,7 +27,7 @@ class WeatherCityController: AbstractWeatherController {
         
         navigationItem.leftBarButtonItem?.rx.tap
             .bind(to: Binder(self, binding: { (self, _) in
-                self.dismiss(animated: true, completion: nil)
+                self.dismiss(animated: true)
             }))
             .disposed(by: disposeBag)
         
@@ -56,6 +56,12 @@ class WeatherCityController: AbstractWeatherController {
         
         output.isLoading
             .drive(customView.refreshControl.rx.isRefreshing)
+            .disposed(by: disposeBag)
+        
+        output.additionCity?
+            .emit(to: Binder(self, binding: { (self, _) in
+                self.dismiss(animated: true)
+            }))
             .disposed(by: disposeBag)
         
         if let rightBarButtonItem = navigationItem.rightBarButtonItem {
