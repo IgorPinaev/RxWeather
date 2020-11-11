@@ -58,7 +58,7 @@ class WeatherCityViewModel: AbstractWeatherViewModel {
             .asObservable()
             .do(onNext: { [weak self] _ in
                 guard let self = self, let city = self.city else { return }
-                WeatherCityLocal.from(struct: city)
+                City.from(struct: city)
             })
             .asSignal(onErrorJustReturn: ())
         
@@ -72,7 +72,7 @@ class WeatherCityViewModel: AbstractWeatherViewModel {
 private extension WeatherCityViewModel {
     func fetchCity(id: Int?) -> Bool {
         guard let id = id else { return false }
-        let request = NSFetchRequest<WeatherCityLocal>(entityName: "WeatherCityLocal")
+        let request = NSFetchRequest<City>(entityName: "City")
         request.predicate = NSPredicate(format: "id == %@", NSNumber(value: id))
         
         let array = try? CoreDataService.instance.managedObjectContext.fetch(request)

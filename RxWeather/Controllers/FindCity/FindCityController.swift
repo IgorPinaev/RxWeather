@@ -45,7 +45,7 @@ private extension FindCityController {
         let output = viewModel.configure(with: input)
         
         output.tableData
-            .drive(customView.tableView.rx.items(cellIdentifier: FindCityCell.reuseId, cellType: FindCityCell.self)) { $2.fill(city: $1) }
+            .drive(customView.tableView.rx.items(cellIdentifier: CityCell.reuseId, cellType: CityCell.self)) { $2.fill(city: $1) }
             .disposed(by: disposeBag)
         
         output

@@ -1,5 +1,5 @@
 //
-//  FindCityCell.swift
+//  CityCell.swift
 //  RxWeather
 //
 //  Created by Игорь Пинаев on 16.10.2020.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class FindCityCell: AbstractTableViewCell {
+class CityCell: AbstractTableViewCell {
     private var nameLabel = UILabel()
     private var tempLabel = UILabel()
     
@@ -20,6 +20,11 @@ class FindCityCell: AbstractTableViewCell {
         } else {
             tempLabel.text = nil
         }
+    }
+    
+    func fill(city: City) {
+        nameLabel.text = "\(city.name), \(city.country)"
+        tempLabel.text = nil
     }
     
     override func setupLayouts() {

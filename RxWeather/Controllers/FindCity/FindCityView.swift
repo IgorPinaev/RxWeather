@@ -47,6 +47,6 @@ private extension FindCityView {
         backgroundColor = .white
         
         tableView.tableFooterView = UIView()
-        tableView.register(FindCityCell.self, forCellReuseIdentifier: FindCityCell.reuseId)
+        tableView.register(CityCell.self, forCellReuseIdentifier: CityCell.reuseId)
     }
 }

@@ -1,5 +1,5 @@
 //
-//  WeatherCityLocal.swift
+//  City.swift
 //  RxWeather
 //
 //  Created by Игорь Пинаев on 10.11.2020.
@@ -9,7 +9,7 @@
 import Foundation
 import CoreData
 
-class WeatherCityLocal: NSManagedObject {
+class City: NSManagedObject {
     @NSManaged var id: NSNumber
     @NSManaged var name: String
     @NSManaged var lat: Double
@@ -17,7 +17,7 @@ class WeatherCityLocal: NSManagedObject {
     @NSManaged var country: String
     
     class func from(struct weatherCity: WeatherCity) {
-        let city = WeatherCityLocal(context: CoreDataService.instance.managedObjectContext)
+        let city = City(context: CoreDataService.instance.managedObjectContext)
         
         city.id = NSNumber(value: weatherCity.id)
         city.name = weatherCity.name
