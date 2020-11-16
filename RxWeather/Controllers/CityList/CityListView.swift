@@ -14,23 +14,28 @@ class CityListView: UIView {
     override init(frame: CGRect = .zero) {
         super.init(frame: frame)
         
+        addSubviews()
+        makeConstraints()
         configureView()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    func configureView() {
-        setupTable()
+}
+private extension CityListView {
+    func addSubviews() {
+        [tableView].forEach(addSubview)
     }
     
-    func setupTable() {
-        addSubview(tableView)
+    func makeConstraints() {
         tableView.fillParent()
-        
-        tableView.register(CityCell.self, forCellReuseIdentifier: CityCell.reuseId)
+    }
+    
+    func configureView() {
+        backgroundColor = .white
         
         tableView.tableFooterView = UIView()
+        tableView.register(CityCell.self, forCellReuseIdentifier: CityCell.reuseId)
     }
 }

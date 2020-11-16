@@ -66,13 +66,13 @@ class WeatherLocationViewModel: AbstractWeatherViewModel {
                 guard let self = self else { throw ApiError.unknownError }
                 return self.locationManager.rx
                     .location
-                    .compactMap({ $0 })
+                    .compactMap { $0 }
             })
             .share()
         
         let placemark = locationManager.rx
             .placemark
-            .compactMap{ $0 }
+            .compactMap { $0 }
         
         let response = location
             .flatMapLatest { [weak self] location -> Observable<Event<OneCallResponse>> in

@@ -8,6 +8,7 @@
 
 import UIKit
 import RxSwift
+import RxCocoa
 
 class CityListController: UIViewController {
     private let viewModel = CityListViewModel()
@@ -26,7 +27,12 @@ class CityListController: UIViewController {
 }
 private extension CityListController {
     func configureRx() {
-        let output = viewModel.configure()
+        let itemSelectedSignal = customView.tableView.rx.itemSelected
+            .asSignal()
+        
+        let input = CityListViewModel.Input(itemSelectedSignal:itemSelectedSignal)
+        
+        let output = viewModel.configure(with: input)
         
         output.tableData
             .drive(customView.tableView.rx.items(cellIdentifier: CityCell.reuseId, cellType: CityCell.self)) { $2.fill(city: $1) }

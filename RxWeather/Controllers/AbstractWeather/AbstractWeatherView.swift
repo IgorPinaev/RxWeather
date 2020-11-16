@@ -25,7 +25,8 @@ class AbstractWeatherView: UIView {
     func configureView() {
         setupTable()
     }
-    
+}
+private extension AbstractWeatherView {
     func setupTable() {
         addSubview(tableView)
         tableView.fillParent()

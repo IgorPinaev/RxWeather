@@ -17,7 +17,7 @@ class City: NSManagedObject {
     @NSManaged var country: String
     
     class func from(struct weatherCity: WeatherCity) {
-        let city = City(context: CoreDataService.instance.managedObjectContext)
+        let city = City(context: CoreDataService.instance.context)
         
         city.id = NSNumber(value: weatherCity.id)
         city.name = weatherCity.name

@@ -7,7 +7,7 @@
 //
 
 protocol EndpointProtocol {
-    var baseUrl: String {get}
-    var path: String {get}
-    var params: [String: String] {get}
+    var baseUrl: String { get }
+    var path: String { get }
+    var params: [String: String] { get }
 }

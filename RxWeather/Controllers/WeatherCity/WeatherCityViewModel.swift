@@ -75,7 +75,7 @@ private extension WeatherCityViewModel {
         let request = NSFetchRequest<City>(entityName: "City")
         request.predicate = NSPredicate(format: "id == %@", NSNumber(value: id))
         
-        let array = try? CoreDataService.instance.managedObjectContext.fetch(request)
+        let array = try? CoreDataService.instance.context.fetch(request)
         
         return array == nil || array!.isEmpty
     }

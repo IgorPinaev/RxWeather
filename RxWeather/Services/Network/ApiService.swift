@@ -24,11 +24,11 @@ class ApiService {
     }
     
     func loadData<T: Decodable>(with type: T.Type, endpoint: EndpointProtocol) -> Observable<T> {
-        guard let request = perform(endpoint) else { return .error(ApiError.invalidURL)}
+        guard let request = perform(endpoint) else { return .error(ApiError.invalidURL) }
         
         return URLSession.shared.rx.data(request: request)
             .map { [weak self] data -> T in
-                guard let self = self else { throw ApiError.dataNil}
+                guard let self = self else { throw ApiError.dataNil }
                 return try self.parse(from: data, with: T.self)
         }
     }
@@ -38,9 +38,9 @@ class ApiService {
             return nil
         }
         
-        urlComponents.queryItems = endpoint.params.map({URLQueryItem(name: $0.key, value: $0.value)})
+        urlComponents.queryItems = endpoint.params.map { URLQueryItem(name: $0.key, value: $0.value) }
         
-        guard let url = urlComponents.url else { return nil}
+        guard let url = urlComponents.url else { return nil }
         return URLRequest(url: url)
     }
     

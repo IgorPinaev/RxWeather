@@ -22,7 +22,7 @@ class CoreDataService {
         return container
     }()
 
-    var managedObjectContext: NSManagedObjectContext {
+    var context: NSManagedObjectContext {
         return persistentContainer.viewContext
     }
     
