@@ -14,7 +14,7 @@ class FetchedResultsService<T: NSManagedObject>: NSObject, NSFetchedResultsContr
     private let frc: NSFetchedResultsController<T>
     private var relay: BehaviorRelay<[T]>!
     
-    private init(predicate: NSPredicate? = nil, sortDescriptors: [NSSortDescriptor] = []) {
+    init(predicate: NSPredicate? = nil, sortDescriptors: [NSSortDescriptor] = []) {
         let request = NSFetchRequest<T>(entityName: String(describing: T.self))
         request.predicate = predicate
         request.sortDescriptors = sortDescriptors
@@ -33,16 +33,10 @@ class FetchedResultsService<T: NSManagedObject>: NSObject, NSFetchedResultsContr
         }
     }
     
-    static func fetchObjects(predicate: NSPredicate? = nil, sortDescriptors: [NSSortDescriptor] = []) -> BehaviorRelay<[T]> {
-        let service = FetchedResultsService<T>(predicate: predicate, sortDescriptors: sortDescriptors)
+    func fetchObjects() -> BehaviorRelay<[T]> {
+        relay = BehaviorRelay<[T]>(value: frc.fetchedObjects ?? [])
         
-        service.relay = BehaviorRelay<[T]>(value: service.frc.fetchedObjects ?? [])
-        
-        return service.relay
-    }
-    
-    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        print("Hello")
+        return relay
     }
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {

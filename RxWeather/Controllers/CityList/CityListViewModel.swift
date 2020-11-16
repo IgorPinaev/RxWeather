@@ -14,6 +14,7 @@ import RxDataSources
 
 class CityListViewModel {
     private let disposeBag = DisposeBag()
+    private var fetchedResultsService: FetchedResultsService<City>?
     
     struct Input {
         let itemSelectedSignal: Signal<IndexPath>
@@ -25,7 +26,9 @@ class CityListViewModel {
     }
     
     func configure(with input: Input) -> Output {
-        let tableData = FetchedResultsService<City>.fetchObjects(sortDescriptors: [NSSortDescriptor(key: "name", ascending: false)])
+        fetchedResultsService = FetchedResultsService<City>(sortDescriptors: [NSSortDescriptor(key: "name", ascending: false)])
+        
+        let tableData = fetchedResultsService!.fetchObjects()
             .share(replay: 1)
         
         let selectedItem = input.itemSelectedSignal
