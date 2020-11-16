@@ -19,7 +19,7 @@ class WeatherCityViewModel: AbstractWeatherViewModel {
     }
     
     struct Output {
-        let tableData: Driver<[MultipleSectionModel]>
+        let tableData: Driver<[WeatherSectionModel]>
         let isLoading: Driver<Bool>
         let error: Signal<Error>
         let showAddLocalButton: Driver<Bool>

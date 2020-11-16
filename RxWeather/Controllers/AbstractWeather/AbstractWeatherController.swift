@@ -20,8 +20,8 @@ class AbstractWeatherController: UIViewController {
     
     func configureRx() {}
     
-    func getDataSource() -> RxTableViewSectionedReloadDataSource<MultipleSectionModel> {
-        return RxTableViewSectionedReloadDataSource<MultipleSectionModel>(
+    func getDataSource() -> RxTableViewSectionedReloadDataSource<WeatherSectionModel> {
+        return RxTableViewSectionedReloadDataSource<WeatherSectionModel>(
             configureCell: { dataSource, table, idxPath, _ in
                 switch dataSource[idxPath] {
                 case let .currentWeather(city: city, desc: desc, temp: temp):

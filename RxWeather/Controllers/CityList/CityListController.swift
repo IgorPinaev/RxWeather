@@ -9,6 +9,7 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import RxDataSources
 
 class CityListController: UIViewController {
     private let viewModel = CityListViewModel()
@@ -30,12 +31,47 @@ private extension CityListController {
         let itemSelectedSignal = customView.tableView.rx.itemSelected
             .asSignal()
         
+        itemSelectedSignal
+            .emit(to: Binder(self, binding: { (self, indexPath) in
+                self.customView.tableView.deselectRow(at: indexPath, animated: true)
+            }))
+            .disposed(by: disposeBag)
+        
         let input = CityListViewModel.Input(itemSelectedSignal:itemSelectedSignal)
         
         let output = viewModel.configure(with: input)
         
         output.tableData
-            .drive(customView.tableView.rx.items(cellIdentifier: CityCell.reuseId, cellType: CityCell.self)) { $2.fill(city: $1) }
+            .drive(customView.tableView.rx.items(dataSource: getDataSource()))
             .disposed(by: disposeBag)
+        
+        output.selectedItem
+            .emit(to: Binder(self, binding: { (self, city) in
+                if let city = city {
+                    
+                } else {
+                    let controller = FindCityController()
+                    
+                    let destinationNavigationController = UINavigationController()
+                    destinationNavigationController.setViewControllers([controller], animated: false)
+                    self.present(destinationNavigationController, animated: true)
+                }
+            }))
+            .disposed(by: disposeBag)
+    }
+    
+    func getDataSource() -> RxTableViewSectionedReloadDataSource<CitySectionModel> {
+        return RxTableViewSectionedReloadDataSource<CitySectionModel>(
+            configureCell: { dataSource, table, idxPath, _ in
+                switch dataSource[idxPath] {
+                case let .cityItem(city: city):
+                    let cell = table.dequeueReusableCell(withIdentifier: CityCell.reuseId) as! CityCell
+                    cell.fill(city: city)
+                    return cell
+                case .addNewItem:
+                    return table.dequeueReusableCell(withIdentifier: AddNewCityCell.reuseId)!
+                }
+            }
+        )
     }
 }

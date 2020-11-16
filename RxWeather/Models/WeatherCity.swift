@@ -17,7 +17,7 @@ class WeatherCity: Decodable {
     let name: String
     let lat: Double
     let lon: Double
-    let temp: Double
+    let temp: Double?
     let country: String
     
     required init(from decoder: Decoder) throws {
@@ -35,6 +35,15 @@ class WeatherCity: Decodable {
         let mainContainer = try container.nestedContainer(keyedBy: MainCodingKeys.self, forKey: .main)
         temp = try mainContainer.decode(Double.self, forKey: .temp)
     }
+    
+    init(from city: City) {
+        id = city.id.intValue
+        name = city.name
+        lat = city.lat
+        lon = city.lon
+        country = city.country
+        temp = nil
+    }
 }
 private extension WeatherCity {
     enum CodingKeys: String, CodingKey {
@@ -43,8 +52,6 @@ private extension WeatherCity {
         case coord
         case main
         case sys
-        case dt
-        case weather
     }
     
     enum CoordCodingKeys: String, CodingKey {

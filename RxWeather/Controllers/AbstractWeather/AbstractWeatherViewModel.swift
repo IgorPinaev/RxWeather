@@ -12,30 +12,30 @@ import RxCocoa
 class AbstractWeatherViewModel {
     let apiService = ApiService()
 
-    func getSections(response: OneCallResponse, name: String?) -> [MultipleSectionModel] {
+    func getSections(response: OneCallResponse, name: String?) -> [WeatherSectionModel] {
         return [.todaySection(title: "Today", response: [
             .currentWeather(city: name ?? "", desc: response.current.weather.first?.description ?? "", temp: response.current.temp.intDesc ?? ""),
             .hourlyWeather(hourly: response.hourly)
         ]),
-        .dailySection(title: "Daily", dailyData: response.daily.map({ SectionItem.dailyWeather(daily: $0)}))]
+        .dailySection(title: "Daily", dailyData: response.daily.map({ WeatherSectionItem.dailyWeather(daily: $0)}))]
     }
 }
 
-enum MultipleSectionModel {
-    case todaySection(title: String, response: [SectionItem])
-    case dailySection(title: String, dailyData: [SectionItem])
+enum WeatherSectionModel {
+    case todaySection(title: String, response: [WeatherSectionItem])
+    case dailySection(title: String, dailyData: [WeatherSectionItem])
 }
 
-enum SectionItem {
+enum WeatherSectionItem {
     case currentWeather(city: String, desc: String, temp: String)
     case hourlyWeather(hourly: [WeatherHourlyData])
     case dailyWeather(daily: WeatherDailyData)
 }
 
-extension MultipleSectionModel: SectionModelType {
-    typealias Item = SectionItem
+extension WeatherSectionModel: SectionModelType {
+    typealias Item = WeatherSectionItem
     
-    var items: [SectionItem] {
+    var items: [WeatherSectionItem] {
         switch self {
         case .todaySection(title: _, response: let items):
             return items.map { $0 }
@@ -53,12 +53,12 @@ extension MultipleSectionModel: SectionModelType {
         }
     }
     
-    init(original: MultipleSectionModel, items: [Item]) {
+    init(original: WeatherSectionModel, items: [Item]) {
         switch original {
         case let .todaySection(title: title, response: _):
             self = .todaySection(title: title, response: items)
-        case .dailySection(title: let title, dailyData: let dailyData):
-            self = .dailySection(title: title, dailyData: dailyData)
+        case .dailySection(title: let title, dailyData: _):
+            self = .dailySection(title: title, dailyData: items)
         }
     }
 }

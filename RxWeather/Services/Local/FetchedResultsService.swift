@@ -11,22 +11,22 @@ import CoreData
 import RxCocoa
 
 class FetchedResultsService<T: NSManagedObject>: NSObject, NSFetchedResultsControllerDelegate {
-    private var frc: NSFetchedResultsController<T>?
+    private let frc: NSFetchedResultsController<T>
     private var relay: BehaviorRelay<[T]>!
     
     private init(predicate: NSPredicate? = nil, sortDescriptors: [NSSortDescriptor] = []) {
-        super.init()
-        
         let request = NSFetchRequest<T>(entityName: String(describing: T.self))
         request.predicate = predicate
         request.sortDescriptors = sortDescriptors
-
+        
         frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext:CoreDataService.instance.context, sectionNameKeyPath: nil, cacheName: nil)
-
-        frc?.delegate = self
+        
+        super.init()
+        
+        frc.delegate = self
         
         do {
-            try frc?.performFetch()
+            try frc.performFetch()
         } catch {
             let nserror = error as NSError
             fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
@@ -36,7 +36,7 @@ class FetchedResultsService<T: NSManagedObject>: NSObject, NSFetchedResultsContr
     static func fetchObjects(predicate: NSPredicate? = nil, sortDescriptors: [NSSortDescriptor] = []) -> BehaviorRelay<[T]> {
         let service = FetchedResultsService<T>(predicate: predicate, sortDescriptors: sortDescriptors)
         
-        service.relay = BehaviorRelay<[T]>(value: service.frc?.fetchedObjects ?? [])
+        service.relay = BehaviorRelay<[T]>(value: service.frc.fetchedObjects ?? [])
         
         return service.relay
     }

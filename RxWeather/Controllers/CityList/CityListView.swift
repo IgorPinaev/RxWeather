@@ -37,5 +37,6 @@ private extension CityListView {
         
         tableView.tableFooterView = UIView()
         tableView.register(CityCell.self, forCellReuseIdentifier: CityCell.reuseId)
+        tableView.register(AddNewCityCell.self, forCellReuseIdentifier: AddNewCityCell.reuseId)
     }
 }

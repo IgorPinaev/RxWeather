@@ -21,11 +21,18 @@ class FindCityController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureNavigationController()
         configureRx()
     }
 }
 private extension FindCityController {
     func configureRx() {
+        navigationItem.leftBarButtonItem?.rx.tap
+            .bind(to: Binder(self, binding: { (self, _) in
+                self.dismiss(animated: true)
+            }))
+            .disposed(by: disposeBag)
+        
         let searchSignal = customView.searchBar.rx.text
             .throttle(.milliseconds(300), scheduler: MainScheduler.instance)
             .distinctUntilChanged()
@@ -66,5 +73,9 @@ private extension FindCityController {
                 self.present(destinationNavigationController, animated: true)
             }))
             .disposed(by: disposeBag)
+    }
+    
+    func configureNavigationController() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Отмена", style: .plain, target: self, action: nil)
     }
 }

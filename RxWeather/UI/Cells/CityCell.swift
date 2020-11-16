@@ -15,7 +15,7 @@ class CityCell: AbstractTableViewCell {
     func fill(city: WeatherCity) {
         nameLabel.text = "\(city.name), \(city.country)"
         
-        if let temp = city.temp.intDesc {
+        if let temp = city.temp?.intDesc {
             tempLabel.text = "\(temp) °C"
         } else {
             tempLabel.text = nil
